@@ -1,0 +1,28 @@
+# Maintainer: Tomas Pecka <tomas.pecka@.com>
+
+pkgname=activemq-cpp
+pkgver=3.9.5
+pkgrel=1
+pkgdesc="ActiveMQ CPP is a messaging library that can use multiple protocols to talk to a MOM (e.g. ActiveMQ)."
+arch=('i686' 'x86_64')
+url="https://github.com/apache/activemq-cpp"
+license=('apache')
+depends=('openssl')
+makedepends=('git' 'autoconf' 'automake' 'libtool' 'apr')
+optdepends=()
+provides=("${pkgname}")
+source=("https://github.com/apache/activemq-cpp/archive/refs/tags/${pkgname}-${pkgver}.tar.gz")
+sha512sums=('f91fcdf7d65076aa47a183bf9600b6252233d82aa9cbc15d3aac929b9b74bfd1634efccd982231b30e6e420dec12d45c1bbbddc839f9c94221820367a0feb2af')
+
+build() {
+  cd $pkgname-$pkgname-$pkgver/$pkgname
+  ./autogen.sh
+  ./configure --prefix=/usr
+  make
+}
+
+package() {
+  cd $pkgname-$pkgname-$pkgver/$pkgname
+  make install DESTDIR="${pkgdir}"
+  rm ${pkgdir}/usr/bin/example
+}
