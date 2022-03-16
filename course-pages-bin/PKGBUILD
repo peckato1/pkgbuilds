@@ -1,0 +1,19 @@
+# Maintainer: Tomas Pecka <tomas.pecka@.com>
+
+_pkgname=course-pages
+pkgname=${_pkgname}-bin
+pkgver=0.8.0
+pkgrel=1
+pkgdesc="This project is a static site generator for course web pages hosted on https://courses.fit.cvut.cz."
+arch=('x86_64')
+url="https://gitlab.fit.cvut.cz/course-pages/course-pages"
+license=('MIT')
+provides=("${_pkgname}")
+source=("${_pkgname}-v${pkgver}.x86_64-linux-gnu.tar.gz")
+sha512sums=('2365ea57a95328cc65d98eb23252a99024c095da325ad8d7741249495fdc6511aebf15a6e92ddd05c34c53dc00de21c8a3f23a95127e55476ebdfde524bb859a')
+
+package() {
+  cd "${_pkgname}-v${pkgver}"
+  install -Dm 775 course-pages ${pkgdir}/usr/bin/course-pages
+  install -Dm 775 LICENSE ${pkgdir}/usr/share/licenses/${pkgname}/LICENSE
+}
