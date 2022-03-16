@@ -1,0 +1,68 @@
+name: CI
+on:
+  push:
+  schedule:
+    - cron: "0 4 * * *"
+
+env:
+  PKGDEST: /home/ci/pkgs
+  PACKAGER: "Tomáš Pecka <tomaspecka@gmail.com>"
+  AUR_ROOT: /home/ci/aur
+  GITHUB_ROOT: /home/ci/github
+
+jobs:
+  build:
+    runs-on: ubuntu-20.04
+    container:
+      image: archlinux
+      options: --privileged --device /dev/fuse
+      volumes:
+        - ${{ github.workspace }}:/home/ci/github
+        - /tmp:/tmp
+    steps:
+      - name: Install packages
+        run: pacman -Suy --noconfirm base-devel sudo devtools
+
+      - name: Checkout repository
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 10
+
+      - name: Prepare environment
+        run: |
+          useradd ci -M
+          echo "PACKAGER=\"${PACKAGER}\"" >> /etc/makepkg.conf
+          echo "PKGDEST=${PKGDEST}" >> /etc/makepkg.conf
+          echo "MAKEFLAGS=\"-j$(nproc)\"" >> /etc/makepkg.conf
+          echo "ci ALL= NOPASSWD: /usr/bin/pacman" >> /etc/sudoers
+          mkdir -p ${PKGDEST} ${AUR_ROOT}
+          chown -R ci:ci /home/ci
+          chmod -R 777 /home/ci
+        working-directory: /home/ci
+
+      - name: Build packages from AUR
+        run: |
+          while read -r package; do
+            echo "Retrieving ${package}"
+            sudo -u ci git clone "https://aur.archlinux.org/${package}.git"
+            pushd "${package}"
+            sudo -u ci makepkg -s --noconfirm
+            popd
+          done < /home/ci/github/aur.txt
+        working-directory: /home/ci/aur
+
+      - name: Build custom packages
+        run: |
+          for package in */; do
+            pushd "${package}"
+            echo "Building ${package%/}"
+            sudo -u ci makepkg -s --noconfirm
+            popd
+          done
+        working-directory: /home/ci/github
+
+      - name: Publish artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: packages
+          path: /home/ci/pkgs/*
