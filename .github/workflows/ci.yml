@@ -8,7 +8,7 @@ env:
   PKGDEST: /home/ci/pkgs
   AURROOT: /home/ci/aur
   PACKAGER: "Tomáš Pecka <tomaspecka@gmail.com>"
-  REPONAME: user
+  REPONAME: dev
 
 jobs:
   build:

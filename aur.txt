@@ -1,8 +1,1 @@
-yay
-srm
 argparse
-zoom
-teams
-chrome-gnome-shell
-skypeforlinux-stable-bin
-teamviewer
