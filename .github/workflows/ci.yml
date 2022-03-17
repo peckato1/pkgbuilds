@@ -6,9 +6,9 @@ on:
 
 env:
   PKGDEST: /home/ci/pkgs
+  AURROOT: /home/ci/aur
   PACKAGER: "Tomáš Pecka <tomaspecka@gmail.com>"
-  AUR_ROOT: /home/ci/aur
-  GITHUB_ROOT: /home/ci/github
+  REPONAME: user
 
 jobs:
   build:
@@ -21,7 +21,7 @@ jobs:
         - /tmp:/tmp
     steps:
       - name: Install packages
-        run: pacman -Suy --noconfirm base-devel sudo devtools
+        run: pacman -Suy --noconfirm base-devel sudo devtools sshfs
 
       - name: Checkout repository
         uses: actions/checkout@v2
@@ -35,7 +35,7 @@ jobs:
           echo "PKGDEST=${PKGDEST}" >> /etc/makepkg.conf
           echo "MAKEFLAGS=\"-j$(nproc)\"" >> /etc/makepkg.conf
           echo "ci ALL= NOPASSWD: /usr/bin/pacman" >> /etc/sudoers
-          mkdir -p ${PKGDEST} ${AUR_ROOT}
+          mkdir -p ${PKGDEST} ${AURROOT}
           chown -R ci:ci /home/ci
           chmod -R 777 /home/ci
         working-directory: /home/ci
@@ -66,3 +66,24 @@ jobs:
         with:
           name: packages
           path: /home/ci/pkgs/*
+
+      - name: Prepare deployment
+        run: |
+          mkdir -p /root/.ssh
+          echo "${{ secrets.SSH_KNOWN_HOSTS }}" > /root/.ssh/known_hosts
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > /root/.ssh/id_ed25519
+          chmod 400 /root/.ssh/id_ed25519
+          mkdir /home/ci/remote
+          sshfs -o allow_other -o idmap=user "${{ secrets.SSH_REMOTE }}" /home/ci/remote
+          rm /root/.ssh/id_ed25519
+
+      - name: Deploy artifacts
+        run: |
+          rm -fr *
+          cp ${PKGDEST}/* .
+          repo-add ${REPONAME}.db.tar.xz *.pkg.*
+        working-directory: /home/ci/remote/
+
+      - name: Unmount remote FS
+        if: ${{ always() }}
+        run: umount /home/ci/remote
