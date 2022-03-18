@@ -8,3 +8,4 @@ skypeforlinux-stable-bin
 teamviewer
 googlekeep-bin
 zulip-desktop-bin
+wondershaper-git
