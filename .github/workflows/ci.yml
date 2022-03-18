@@ -74,7 +74,12 @@ jobs:
           done
         working-directory: /home/ci/github
 
-      - name: Publish artifacts
+      - name: Create repository
+        run: |
+          sudo -u ci repo-add --nocolor --sign --key "$(cat /home/ci/gpgkey)" ${REPONAME}.db.tar.xz *.pkg.tar.zst
+        working-directory: /home/ci/pkgs
+
+      - name: Publish repository as an artifact
         uses: actions/upload-artifact@v3
         with:
           name: packages
@@ -94,7 +99,6 @@ jobs:
         run: |
           rm -fr *
           cp ${PKGDEST}/* .
-          sudo -u ci repo-add --nocolor --sign --key "$(cat /home/ci/gpgkey)" ${REPONAME}.db.tar.xz *.pkg.tar.zst
         working-directory: /home/ci/remote/
 
       - name: Unmount remote FS
