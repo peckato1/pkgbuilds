@@ -31,14 +31,16 @@ jobs:
       - name: Prepare environment
         run: |
           useradd ci -M
-          echo "PACKAGER=\"${PACKAGER}\"" >> /etc/makepkg.conf
-          echo "PKGDEST=${PKGDEST}" >> /etc/makepkg.conf
-          echo "MAKEFLAGS=\"-j$(nproc)\"" >> /etc/makepkg.conf
           echo "ci ALL= NOPASSWD: /usr/bin/pacman" >> /etc/sudoers
           mkdir -p ${PKGDEST} ${AURROOT}
           chown -R ci:ci /home/ci
           chmod -R 777 /home/ci
-        working-directory: /home/ci
+
+      - name: Prepare makepkg.conf
+        run: |
+          echo "PACKAGER=\"${PACKAGER}\"" >> /etc/makepkg.conf
+          echo "PKGDEST=${PKGDEST}" >> /etc/makepkg.conf
+          echo "MAKEFLAGS=\"-j$(nproc)\"" >> /etc/makepkg.conf
 
       - name: Build packages from AUR
         run: |
@@ -67,13 +69,13 @@ jobs:
           name: packages
           path: /home/ci/pkgs/*
 
-      - name: Prepare deployment
+      - name: Mount remote repository
         run: |
           mkdir -p /root/.ssh
+          mkdir -p /home/ci/remote
           echo "${{ secrets.SSH_KNOWN_HOSTS }}" > /root/.ssh/known_hosts
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > /root/.ssh/id_ed25519
           chmod 400 /root/.ssh/id_ed25519
-          mkdir /home/ci/remote
           sshfs -o allow_other -o idmap=user "${{ secrets.SSH_REMOTE }}/${REPONAME}/x86_64" /home/ci/remote
           rm /root/.ssh/id_ed25519
 
