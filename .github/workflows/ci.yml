@@ -59,7 +59,8 @@ jobs:
             echo "Retrieving ${package}"
             sudo -u ci git clone "https://aur.archlinux.org/${package}.git"
             pushd "${package}"
-            sudo -u ci makepkg -s --noconfirm
+            export SOURCE_DATE_EPOCH="$(git log -1 --format=%ct)"
+            sudo -u ci --preserve-env=SOURCE_DATE_EPOCH makepkg -s --noconfirm
             popd
           done < /home/ci/github/aur.txt
         working-directory: /home/ci/aur
@@ -69,7 +70,8 @@ jobs:
           for package in */; do
             pushd "${package}"
             echo "Building ${package%/}"
-            sudo -u ci makepkg -s --noconfirm
+            export SOURCE_DATE_EPOCH="$(git log -1 --format=%ct .)"
+            sudo -u ci --preserve-env=SOURCE_DATE_EPOCH makepkg -s --noconfirm
             popd
           done
         working-directory: /home/ci/github
