@@ -7,3 +7,4 @@ chrome-gnome-shell
 skypeforlinux-stable-bin
 teamviewer
 googlekeep-bin
+zulip-desktop-bin
