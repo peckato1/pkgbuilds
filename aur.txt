@@ -10,3 +10,4 @@ googlekeep-bin
 zulip-desktop-bin
 wondershaper-git
 gdb-ctest-git
+clang-build-analyzer
