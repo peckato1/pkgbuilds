@@ -74,7 +74,7 @@ jobs:
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > /root/.ssh/id_ed25519
           chmod 400 /root/.ssh/id_ed25519
           mkdir /home/ci/remote
-          sshfs -o allow_other -o idmap=user "${{ secrets.SSH_REMOTE }}" /home/ci/remote
+          sshfs -o allow_other -o idmap=user "${{ secrets.SSH_REMOTE }}/${REPONAME}/x86_64" /home/ci/remote
           rm /root/.ssh/id_ed25519
 
       - name: Deploy artifacts
