@@ -12,3 +12,4 @@ wondershaper-git
 gdb-ctest-git
 clang-build-analyzer
 mkosi-git
+trompeloeil-git
