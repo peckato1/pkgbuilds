@@ -2,7 +2,7 @@
 
 _pkgname=course-pages
 pkgname=${_pkgname}-bin
-pkgver=0.8.0
+pkgver=0.9.0
 pkgrel=1
 pkgdesc="This project is a static site generator for course web pages hosted on https://courses.fit.cvut.cz."
 arch=('x86_64')
@@ -11,7 +11,7 @@ license=('MIT')
 provides=("${_pkgname}")
 options=("!strip")
 source=("${_pkgname}-v${pkgver}.x86_64-linux-gnu.tar.gz")
-sha512sums=('2365ea57a95328cc65d98eb23252a99024c095da325ad8d7741249495fdc6511aebf15a6e92ddd05c34c53dc00de21c8a3f23a95127e55476ebdfde524bb859a')
+sha512sums=('636b6c89b4fa0af5330990fa52986ffbbe6b96e453c079cf60d86206de0494dc71917a2ceae0d707f4c055cfef537562b5d7aee0ac9c8cc9b9188658f4a6eb28')
 
 package() {
   cd "${_pkgname}-v${pkgver}"
