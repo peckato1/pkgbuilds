@@ -9,6 +9,7 @@ arch=('x86_64')
 url="https://gitlab.fit.cvut.cz/course-pages/course-pages"
 license=('MIT')
 provides=("${_pkgname}")
+options=("!strip")
 source=("${_pkgname}-v${pkgver}.x86_64-linux-gnu.tar.gz")
 sha512sums=('2365ea57a95328cc65d98eb23252a99024c095da325ad8d7741249495fdc6511aebf15a6e92ddd05c34c53dc00de21c8a3f23a95127e55476ebdfde524bb859a')
 
