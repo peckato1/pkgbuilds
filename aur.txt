@@ -16,3 +16,4 @@ trompeloeil-git
 dxvk-bin
 otf-xkcd-font
 mprocs
+upscaler
