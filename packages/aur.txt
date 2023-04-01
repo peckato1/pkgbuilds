@@ -2,7 +2,7 @@ yay
 srm
 zoom
 teams
-chrome-gnome-shell
+gnome-browser-connector
 skypeforlinux-stable-bin
 teamviewer
 wondershaper-git
