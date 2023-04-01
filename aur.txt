@@ -1,6 +1,5 @@
 yay
 srm
-argparse
 zoom
 teams
 chrome-gnome-shell
