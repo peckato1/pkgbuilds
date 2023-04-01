@@ -12,7 +12,6 @@ gdb-ctest-git
 clang-build-analyzer
 mkosi-git
 trompeloeil-git
-dxvk-bin
 otf-xkcd-font
 mprocs
 upscaler
