@@ -7,7 +7,6 @@ skypeforlinux-stable-bin
 teamviewer
 wondershaper-git
 gdb-ctest-git
-clang-build-analyzer
 mkosi-git
 trompeloeil-git
 otf-xkcd-font
