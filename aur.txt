@@ -7,7 +7,6 @@ skypeforlinux-stable-bin
 teamviewer
 wondershaper-git
 gdb-ctest-git
-mkosi-git
 otf-xkcd-font
 mprocs
 upscaler
