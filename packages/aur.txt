@@ -9,4 +9,3 @@ wondershaper-git
 gdb-ctest-git
 otf-xkcd-font
 mprocs
-upscaler
