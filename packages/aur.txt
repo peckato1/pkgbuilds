@@ -10,3 +10,4 @@ gdb-ctest-git
 otf-xkcd-font
 mprocs
 gprof2dot
+hotspot
