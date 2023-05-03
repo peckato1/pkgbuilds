@@ -172,7 +172,7 @@ run_docker() {
         -v "$(pwd)"/output:/output \
         -v "$(pwd)"/cache:/pacmanCache \
         --env-file=.env \
-        "${docker_args[@]}" \
+        ${docker_args[@]} \
         archlinux \
         bash -c "build.sh ${cmd}"
 }
