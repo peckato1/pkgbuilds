@@ -219,7 +219,8 @@ main() {
     mkdir -p output/
     mkdir -p cache/
 
-    docker pull archlinux >/dev/null
+    msg "Pulling docker image"
+    docker pull -q archlinux
 
     find packages -maxdepth 1 -type d -print0 | while IFS= read -r -d '' pkgdir
     do
