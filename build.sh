@@ -222,7 +222,7 @@ main() {
     msg "Pulling docker image"
     docker pull -q archlinux
 
-    find packages -maxdepth 1 -type d -print0 | while IFS= read -r -d '' pkgdir
+    find packages -mindepth 1 -maxdepth 1 -type d -print0 | while IFS= read -r -d '' pkgdir
     do
         local pkgname
         pkgname="$(basename "${pkgdir}")"
