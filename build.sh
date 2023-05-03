@@ -168,15 +168,19 @@ run_docker() {
     local docker_args=("$@")
 
     # ulimit: https://www.mail-archive.com/debian-bugs-dist@lists.debian.org/msg1892339.html
+    set -x
+    pwd
+    ls -la
     docker run --rm \
         --ulimit nofile=1024:524288 \
-        -v "$(pwd)"/build.sh:/usr/local/bin/build.sh:ro \
+        -v "$(pwd)":/app:ro \
         -v "$(pwd)"/output:/output \
         -v "$(pwd)"/cache:/pacmanCache \
         --env-file=.env \
         ${docker_args[@]} \
         archlinux \
-        bash -c "build.sh ${cmd}"
+        bash -c "ls -la /app && /app/build.sh ${cmd}"
+    set +x
 }
 
 repo_prepare() {

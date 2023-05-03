@@ -4,12 +4,6 @@ on:
   schedule:
     - cron: "0 4 * * *"
 
-env:
-  PKGDEST: /home/ci/pkgs
-  AURROOT: /home/ci/aur
-  PACKAGER: "Tomáš Pecka <tomaspecka@gmail.com>"
-  REPONAME: user
-
 jobs:
   build:
     runs-on: ubuntu-20.04
@@ -21,88 +15,20 @@ jobs:
         - /tmp:/tmp
     steps:
       - name: Install packages
-        run: pacman -Suy --noconfirm base-devel sudo devtools sshfs
+        run: pacman -Suy --noconfirm rsync docker git
+
+      - name: Git safe working-directory
+        run: git config --global --add safe.directory /home/ci/github
 
       - name: Checkout repository
         uses: actions/checkout@v2
         with:
           fetch-depth: 10
 
-      - name: Prepare environment
-        run: |
-          useradd ci -M
-          echo "ci ALL= NOPASSWD: /usr/bin/pacman" >> /etc/sudoers
-          mkdir -p ${PKGDEST} ${AURROOT}
-          chown -R ci:ci /home/ci
-          chmod -R 777 /home/ci
-
-      - name: Prepare makepkg.conf
-        run: |
-          echo "PACKAGER=\"${PACKAGER}\"" >> /etc/makepkg.conf
-          echo "PKGDEST=${PKGDEST}" >> /etc/makepkg.conf
-          echo "MAKEFLAGS=\"-j$(nproc)\"" >> /etc/makepkg.conf
-          echo "BUILDENV=(!distcc !color !ccache check sign)" >> /etc/makepkg.conf
-
-      - name: Prepare signing keys
-        run: |
-          echo "${{ secrets.PGP_KEY }}" > sign.key
-          chmod 444 sign.key
-          sudo -u ci gpg --import sign.key
-          gpg --import --import-options show-only sign.key | head -n 2 | tail -n 1 | tr -d ' ' > gpgkey
-          echo "GPGKEY=$(cat gpgkey)" >> /etc/makepkg.conf
-          rm sign.key
-        working-directory: /home/ci
-
-      - name: Build packages from AUR
-        run: |
-          while read -r package; do
-            echo "Retrieving ${package}"
-            sudo -u ci git clone "https://aur.archlinux.org/${package}.git"
-            pushd "${package}"
-            export SOURCE_DATE_EPOCH="$(git log -1 --format=%ct)"
-            sudo -u ci --preserve-env=SOURCE_DATE_EPOCH makepkg -s --noconfirm
-            popd
-          done < /home/ci/github/aur.txt
-        working-directory: /home/ci/aur
-
-      - name: Build custom packages
-        run: |
-          for package in */; do
-            pushd "${package}"
-            echo "Building ${package%/}"
-            export SOURCE_DATE_EPOCH="$(git log -1 --format=%ct .)"
-            sudo -u ci --preserve-env=SOURCE_DATE_EPOCH makepkg -s --noconfirm
-            popd
-          done
+      - name: Set up .env
+        run: echo "${{ secrets.ENV_FILE_CONTENT }}" | base64 -d > .env
         working-directory: /home/ci/github
 
-      - name: Create repository
-        run: |
-          sudo -u ci repo-add --nocolor --sign --key "$(cat /home/ci/gpgkey)" ${REPONAME}.db.tar.xz *.pkg.tar.zst
-        working-directory: /home/ci/pkgs
-
-      - name: Publish repository as an artifact
-        uses: actions/upload-artifact@v3
-        with:
-          name: packages
-          path: /home/ci/pkgs/*
-
-      - name: Mount remote repository
-        run: |
-          mkdir -p /root/.ssh
-          mkdir -p /home/ci/remote
-          echo "${{ secrets.SSH_KNOWN_HOSTS }}" > /root/.ssh/known_hosts
-          echo "${{ secrets.SSH_PRIVATE_KEY }}" > /root/.ssh/id_ed25519
-          chmod 400 /root/.ssh/id_ed25519
-          sshfs -o allow_other -o idmap=user "${{ secrets.SSH_REMOTE }}/${REPONAME}/x86_64" /home/ci/remote
-          rm /root/.ssh/id_ed25519
-
-      - name: Deploy artifacts
-        run: |
-          rm -fr *
-          cp ${PKGDEST}/* .
-        working-directory: /home/ci/remote/
-
-      - name: Unmount remote FS
-        if: ${{ always() }}
-        run: umount /home/ci/remote
+      - name: Run
+        run: ./build.sh
+        working-directory: /home/ci/github
