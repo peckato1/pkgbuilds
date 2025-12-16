@@ -1,0 +1,27 @@
+pkgname=kyocera-linux-universal-driver
+pkgver=20240521
+pkgrel=1
+pkgdesc='Kyocera Linux Universal Driver'
+arch=('any')
+url="https://www.kyoceradocumentsolutions.cz/cs.html"
+depends=('cups')
+makedepends=('unzip' 'libarchive')
+source=("Linux_Universal_Driver.zip::https://www.kyoceradocumentsolutions.cz/content/dam/download-center-cf/cz/drivers/all/Linux_Universal_Driver_zip.download.zip")
+sha256sums=('SKIP')
+
+prepare() {
+  cd "${srcdir}"
+  unzip Linux_Universal_Driver.zip
+  bsdtar xzf KyoceraLinuxPackages-${pkgver}.tar.gz
+}
+
+package() {
+    bsdtar xf ./Fedora/EU/kyodialog_x86_64/kyodialog-9.4-0.x86_64.rpm -C "${pkgdir}/"
+
+    # mimic part of debian postinst
+    mkdir -p ${pkgdir}/usr/share/ppd/kyocera
+    mv ${pkgdir}/usr/share/kyocera9.4/ppd9.4/* ${pkgdir}/usr/share/ppd/kyocera
+    rm -fr ${pkgdir}/usr/share/kyocera9.4/ppd9.4
+    chmod 755 ${pkgdir}/usr/bin/kyodialog9.4
+    chmod 755 ${pkgdir}/usr/bin/kyoPPDWrite_H
+}
