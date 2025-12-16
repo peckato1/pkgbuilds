@@ -1,0 +1,27 @@
+pkgname=jre8u202
+pkgver=8u202
+pkgrel=1
+pkgdesc="OpenJDK Java Runtime Environment 8u202"
+url=""https://www.oracle.com/java/technologies/java-se-glance.html
+arch=("any")
+license=("unknown")
+# Downloaded from https://sharepoint.cvut.cz/inforek/ma/ma_GrafickyManual
+# (requires authentication). These fonts are used on web, so they are in fact
+# publicly available.
+source=(
+    "jre-8u202-linux-x64.tar.gz"
+    "LICENSE"
+)
+sha512sums=(
+    '2460cde88162b00f5ca5600084f5f6b8720b8158869f5f5832fe886a5a6e839eb48398e9e3df47c45be257d9f6915e682d294d560b09e097ff610f09a76b1760'
+    '9556b19e8faaa359bb02a9c12de66ef729ba824883e7ede60f24acec7f65937306d3ab2f75a2efbbae1dcb3108303acbb796d2fa17a11f8dff8b2759d4279307')
+
+package() {
+    local SRCDIR="${srcdir}/jre1.8.0_202"
+
+    install -Dm644 LICENSE "${pkgdir}/usr/share/licenses/${pkgname}/LICENSE"
+    install -dm755 "${SRCDIR}/bin" "${pkgdir}/opt/jre8u202/bin"
+    install -dm755 "${SRCDIR}/lib" "${pkgdir}/opt/jre8u202/lib"
+    mv ${SRCDIR}/bin/* "${pkgdir}/opt/jre8u202/bin"
+    mv ${SRCDIR}/lib/* "${pkgdir}/opt/jre8u202/lib"
+}
